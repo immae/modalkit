@@ -307,7 +307,7 @@ where
                 count += 1;
                 let mut line_width = 0;
                 for c in line.chars(CharOff::from(0)) {
-                    let c_width = c.width_cjk().unwrap_or(1);
+                    let c_width = unicode_width::UnicodeWidthChar::width(c).unwrap_or(1);
                     if line_width + c_width > width {
                         count += 1;
                         line_width = c_width;
@@ -815,7 +815,7 @@ where
                 let mut num_chars = 0;
                 let mut cur_width = 0;
                 for (i, c) in s.chars(CharOff::from(start_char)).enumerate() {
-                    let c_width = c.width_cjk().unwrap_or(1);
+                    let c_width = unicode_width::UnicodeWidthChar::width(c).unwrap_or(1);
                     if cur_width + c_width > width {
                         full = true;
                         break;
@@ -1098,12 +1098,13 @@ where
                 let s = s.slice(CharOff::from(start)..CharOff::from(end)).to_string();
 
                 if line == cursor.y && (start..=end).contains(&cursor.x) {
-                    let coff = s[..s
-                        .char_indices()
-                        .map(|(i, _)| i)
-                        .nth(cursor.x.saturating_sub(start))
-                        .unwrap_or(s.len())]
-                        .width_cjk() as u16;
+                // Compute display width correctly for unicode
+                let rel = cursor.x.saturating_sub(start);
+                let prefix = s
+                    .chars()
+                    .take(rel)
+                    .collect::<String>();
+                let coff = unicode_width::UnicodeWidthStr::width(prefix.as_str()) as u16;
 
                     state.term_cursor = (x + coff, y);
                 }
