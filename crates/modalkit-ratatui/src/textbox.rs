@@ -892,6 +892,7 @@ where
                     .unwrap_or(s.len())]
                     .width_cjk() as u16;
 
+                eprintln!("cursor branch WRAP: x={}, coff={}, y={}, cursor_x={}, start={}", x, coff, y, cursor.x, start);
                 state.term_cursor = (x + coff, y);
             }
 
@@ -1024,6 +1025,7 @@ where
             state.viewctx.corner.set_x(*start);
         }
 
+        eprintln!("cursor branch ONELINE: x={}, y={}, cursor_x={}", x, y, cursor.x);
         state.term_cursor = (x, y);
 
         for (line, start, end, s, _, cursor_line) in joined.into_iter() {
@@ -1042,6 +1044,7 @@ where
                     .unwrap_or(s.len())]
                     .width_cjk() as u16;
 
+                eprintln!("cursor branch WRAP: x={}, coff={}, y={}, cursor_x={}, start={}", x, coff, y, cursor.x, start);
                 state.term_cursor = (x + coff, y);
             }
 
@@ -1106,7 +1109,8 @@ where
                     .collect::<String>();
                 let coff = unicode_width::UnicodeWidthStr::width(prefix.as_str()) as u16;
 
-                    state.term_cursor = (x + coff, y);
+                    eprintln!("cursor branch WRAP: x={}, coff={}, y={}, cursor_x={}, start={}", x, coff, y, cursor.x, start);
+                state.term_cursor = (x + coff, y);
                 }
 
                 if cbx < slen {
